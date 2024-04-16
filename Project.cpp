@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 using namespace std;
-
+//classes
 // this is a pet class
 class pet
 {
