@@ -42,4 +42,5 @@ class user
 int main()
 {
     cout << "hello this is azeems file!";
+    //welcome statement
 }
