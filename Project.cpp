@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
 using namespace std;
-
+//classes
+// my name is Abdul Wadood Fucking khan
+// this is a pet class
 class pet
 {
     private:
@@ -40,5 +42,6 @@ class user
 
 int main()
 {
-    
+    cout << "hello this is azeems file!";
+    //welcome statement
 }
