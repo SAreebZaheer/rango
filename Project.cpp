@@ -2,6 +2,7 @@
 #include <string>
 using namespace std;
 
+// this is a pet class
 class pet
 {
     private:
