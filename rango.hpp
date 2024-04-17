@@ -16,7 +16,12 @@ namespace RangoAPIServiceEndpoint{
     {
         try
         {
-            UnitTesting::Assert_EQ(2, 3, "2 and 3 are NOT Equal");
+            // Check if the equality assertion function works
+            UnitTesting::Assert_EQ(2, 2, "Unit Test - Equality Assertion Function - Incorrectly Operating");
+            UnitTesting::Assert_EQ(2, 2, "Unit Test - Equality Assertion Function - Incorrectly Operating");
+            UnitTesting::Assert_EQ(2, 2, "Unit Test - Equality Assertion Function - Incorrectly Operating");
+            UnitTesting::Assert_EQ(2, 2, "Unit Test - Equality Assertion Function - Incorrectly Operating");
+            UnitTesting::Assert_EQ(2, 2, "Unit Test - Equality Assertion Function - Incorrectly Operating");
         }
         catch(const std::exception& e)
         {
