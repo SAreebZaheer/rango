@@ -5,14 +5,13 @@
 // namespaces are useful when organising large projects and preventing naming conflicts
 namespace InteractablesAndObjects{
     class pet
-    {
-        private:
+    {         
+
+        public:
             std::string name;
             int level;
             int health;
             std::string type;
-
-        public:
             pet(std::string n, int l, int h, std::string t) : name(n), level(l), health(h), type(t)
             {}
 
