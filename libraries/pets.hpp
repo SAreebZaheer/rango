@@ -32,7 +32,13 @@ namespace InteractablesAndObjects{
             virtual void feed();
             virtual void checkup();
 
-            virtual void make_sound() = 0;
-            virtual void do_trick() = 0;
+            virtual string make_sound() = 0;
+            virtual string do_trick() = 0;
     }; 
+
+    class bird : public pet {
+        public:
+		string make_sound();
+        string do_trick();
+	};
 }
