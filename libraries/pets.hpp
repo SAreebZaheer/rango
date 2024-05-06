@@ -1,28 +1,38 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include "gaming.hpp"
 
 // namespaces are useful when organising large projects and preventing naming conflicts
 namespace InteractablesAndObjects{
     class pet
-    {         
+    {   
+        protected:
+            std::string                     name;
+            Gamification::ProgressTracker   Progress;
+            Gamification::StatTracker       Stats;
 
         public:
-            std::string name;
-            int level;
-            int health;
-            std::string type;
-            pet(std::string n, int l, int h, std::string t) : name(n), level(l), health(h), type(t)
+
+
+            pet(std::string name, int health) : name(name), Progress(), Stats()
             {}
 
-            pet()
+            pet() : Progress()
             {
                 std::cout << "Please enter the name of the pet: ";
                 std::cin >> name;
-                std::cout << "Please enter the type of the pet (cat,dog,bird etc.): ";
-                std::cin >> type;
-                level = 0;
-                health = 50;
-            }
-    };
+                Stats.health = 50;
+            };
+
+            virtual void weight_lift();
+            virtual void jog();
+            virtual void run();
+            virtual void dressup();
+            virtual void feed();
+            virtual void checkup();
+
+            virtual void make_sound() = 0;
+            virtual void do_trick() = 0;
+    }; 
 }

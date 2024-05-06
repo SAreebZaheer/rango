@@ -23,14 +23,14 @@ namespace RangoAPIServiceEndpoint{
             UnitTesting::Assert_EQ(2, 2, "Unit Test - Equality Assertion Function - Incorrectly Operating");
             UnitTesting::Assert_EQ(2, 2, "Unit Test - Equality Assertion Function - Incorrectly Operating");
         }
-        catch(const std::exception& e)
+        catch(const std::exception& E)
         {
-            std::cerr << e.what() << std::endl;
+            std::cerr << E.what() << std::endl;
             return GENERAL_ERROR;
         }
-        catch(const UnitTesting::AssertionError& e)
+        catch(const UnitTesting::AssertionError& E)
         {
-            std::cerr << e.what() << std::endl;
+            std::cerr << E.what() << std::endl;
             return TESTING_ERROR;
         }
         catch(...)

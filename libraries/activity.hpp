@@ -1,84 +1,44 @@
 #include <iostream>
 using namespace std;
 #include "pets.hpp"
-using namespace InteractablesAndObjects;
-
-class activity : public pet
-{
-    private:
-        string act;
-    public:
-
-    virtual void weight_lift()
+namespace InteractablesAndObjects{
+    void pet::weight_lift()
     {
-        level = level + 1;
-        health = health + 20;
-        cout << "The pet has done weightlifting and has gained 20 health points. Congratulations! " << endl;
+        Stats.health += 20;
+        Stats.buffness++;
+        cout << "The pet has done weightlifting and has gained buffness and 20 health points. Congratulations! " << endl;
     }
 
-    virtual void jog()
+    void pet::jog()
     {
-        health = health + 5;
-        cout << "The pet has done weightlifting and has gained 5 health points. Congratulations! " << endl;
+        Stats.health += 5;
+        Stats.stamina++;
+        cout << "The pet has jogged, gaining 5 health and 1 stamina. Congratulations! " << endl;
     }
 
-    virtual void run()
+    void pet::run()
     {
-        level = level + 1;
-        health = health + 10;
-        cout << "The pet has done running and has gained 10 health points & increased 1 level. Congratulations! " << endl;
+        Stats.health += 10;
+        Stats.stamina += 2;
+        cout << "The pet has done running and has gained 10 health points and gained 2 stamina. Congratulations! " << endl;
     }
 
-    virtual void dressup()
+    void pet::dressup()
     {
-        cout << "The pet has dressed up and has swag. Have fun! " << endl;
+        Stats.morale++;
+        cout << "The pet has dressed up and has swag, this is good for morale. Have fun! " << endl;
     }
 
-    virtual void feed()
+    void pet::feed()
     {
-        level = level + 1;
-        health = health + 5;
-        cout << "The pet has eaten its food and has gained 5 health points along with 1 level. Congratulations! " << endl;
+        Stats.hunger = 0;
+        Stats.health += 5;
+        cout << "The pet has eaten its food and has gained 5 health points and hunger has been reset. Congratulations! " << endl;
     }
 
-    virtual void checkup()
+    void pet::checkup()
     {
-        health = health + 10;
-        cout << "The pet has had its checkup and its health is : " << health << endl;
-    }
-
-    activity()
-    {
-        int opt;
-            cout << "The following are some actvities you can take part in with your pet. Each activity increases various traits." << endl;
-            cout << "Please choose any one actvity." << endl;
-            cout << "1. Weight lifting" << endl << "2. Jog" << endl << "3. Run" << endl << "4. Dress Up" << endl;
-            cout << "5. Feed" << endl << "6. Checkup" << endl;
-            cin >> opt;
-            //all activities have effects on health, level, strength etc
-                if (opt == 1)
-                {
-                    this->weight_lift();
-                }
-                else if (opt == 2)
-                {
-                    this->jog();
-                }
-                else if (opt == 3)
-                {
-                    this->run();
-                }
-                else if (opt == 4)
-                {
-                    this->dressup();
-                }
-                else if (opt == 5)
-                {
-                   this->feed();
-                }
-                else if (opt == 6)
-                {
-                    this->checkup();
-                }
+        Stats.health += 10;
+        cout << "The pet has had its checkup and its health is : " << Stats.health << endl;
     }
 };
