@@ -36,10 +36,38 @@ namespace InteractablesAndObjects{
         Stats.health += 10;
     }
 
+    string pet::make_sound(){
+        return "Base pet cannot make a sound :(";
+    }
+    string pet::do_trick(){
+        return "Base pet cannot do tricks :(";
+    }
+
     string bird::make_sound(){
         return "Chirp!";
     }
     string bird::do_trick(){
-        return "";
+        return name + " flies through a hoop!";
+    }
+
+    string dog::make_sound(){
+        return "Bark!";
+    }
+    string dog::do_trick(){
+        return name + " does a backflip!";
+    }
+
+    string cat::make_sound(){
+        return "Meow!";
+    }
+    string cat::do_trick(){
+        return name + " fell asleep :(";
+    }
+
+    string fish::make_sound(){
+        return "Click!";
+    }
+    string fish::do_trick(){
+        return name + "does a spin!";
     }
 };

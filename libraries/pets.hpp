@@ -8,14 +8,12 @@ namespace InteractablesAndObjects{
     class pet
     {   
         protected:
-            std::string                     name;
+            string                          name;
             Gamification::ProgressTracker   Progress;
             Gamification::StatTracker       Stats;
 
         public:
-
-
-            pet(std::string name, int health) : name(name), Progress(), Stats()
+            pet(string name) : name(name), Progress(), Stats()
             {}
 
             pet() : Progress()
@@ -32,13 +30,39 @@ namespace InteractablesAndObjects{
             virtual void feed();
             virtual void checkup();
 
-            virtual string make_sound() = 0;
-            virtual string do_trick() = 0;
+            virtual string make_sound();
+            virtual string do_trick();
     }; 
 
     class bird : public pet {
         public:
-		string make_sound();
-        string do_trick();
+		string make_sound() override;
+        string do_trick() override;
+
+        bird(string name) : pet(name) {};
 	};
+
+    class dog : public pet {
+        public:
+        string make_sound() override;
+        string do_trick() override;
+
+        dog(string name) : pet(name) {};
+    };
+
+    class cat : public pet {
+        public:
+        string make_sound() override;
+        string do_trick() override;
+
+        cat(string name) : pet(name) {};
+    };
+
+    class fish: public pet {
+        public:
+        string make_sound() override;
+        string do_trick() override;
+
+        fish(string name) : pet(name) {};
+    };
 }
