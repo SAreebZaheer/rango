@@ -2,6 +2,10 @@
 using namespace std;
 #include "pets.hpp"
 namespace InteractablesAndObjects{
+    string interact(pet& A, pet& B){
+        
+    }
+
     void pet::weight_lift()
     {
         Stats.health += 20;

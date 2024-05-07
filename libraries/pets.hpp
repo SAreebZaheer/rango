@@ -38,6 +38,9 @@ namespace InteractablesAndObjects{
         public:
 		string make_sound() override;
         string do_trick() override;
+        string fly(){
+            return name + " flies";
+        }
 
         bird(string name) : pet(name) {};
 	};
@@ -46,6 +49,9 @@ namespace InteractablesAndObjects{
         public:
         string make_sound() override;
         string do_trick() override;
+        string guard(){
+            return name + " stands on guard";
+        }
 
         dog(string name) : pet(name) {};
     };
@@ -54,6 +60,9 @@ namespace InteractablesAndObjects{
         public:
         string make_sound() override;
         string do_trick() override;
+        string play() {
+            return name + " jumps around";
+        }
 
         cat(string name) : pet(name) {};
     };
@@ -62,6 +71,9 @@ namespace InteractablesAndObjects{
         public:
         string make_sound() override;
         string do_trick() override;
+        string swim() {
+            return name + " swims";
+        }
 
         fish(string name) : pet(name) {};
     };
