@@ -1,1 +1,68 @@
-<!Doctype HTML>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Cat Info</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #E6E6FA; /* lavender */
+}
+.cat-info {
+    border: 1px solid #ccc;
+    padding: 20px;
+    max-width: 80%;
+    max-height: 80vh;
+    text-align: center;
+    overflow: auto;
+    background-color: #f7f7f7; /* off-white */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.cat-image {
+    width: 40%;
+    height: 40%;
+}
+.buttons {
+    margin-top: 20px;
+}
+button {
+    margin-right: 10px;
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: #E6E6FA; /* lavender */
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+button:hover {
+    background-color: #CCC9E3; /* slightly darker shade of lavender on hover */
+}
+    </style>
+</head>
+
+<body>
+    <div class="cat-info">
+        <h2>Pet Information</h2>
+        <p><strong>Name:</strong> Tom</p>
+        <p><strong>Health:</strong> 90%</p>
+        <p><strong>Current Level:</strong> 5</p>
+        <img src="tom.png" alt="Tom the Cat" class="cat-image">
+        <div class="buttons">
+            <button>Feed</button>
+            <button>Play</button>
+            <button>Train</button>
+            <button>Sleep</button>
+        </div>
+    </div>
+</body>
+
+</html><!Doctype HTML>
