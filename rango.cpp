@@ -32,16 +32,25 @@ int main()
     }
     catch (const HTTP::ServiceUnavailableException& E)
     {
-        cout << E.HTTPDetailedWhat();
+        cout << E.HTTPDetailedWhat() << endl;
         WSACleanup(); // It is a good practice to cleanup the WinSock API if we are unable to initialise the server
         return E.getCode();// If the server did not initialise, there is no point, so we should 
     }
+    catch (const HTTP::GatewayTimeoutException& E)
+    {
+		cout << E.HTTPDetailedWhat() << endl;
+	}
+    /*
+    Disable the catch all for testing so we can see the exact errors when they come
     catch (...)
     {
-		cout << "An unknown error occurred while trying to initialise the server";
+		cout << "An unknown error occurred while trying to initialise the server" << endl;
         WSACleanup(); // It is a good practice to cleanup the WinSock API if we are unable to initialise the server
 		return -1;
 	}
+    */
+
+    closesocket(listeningSocket);
 
 
     return ExecutionStatus;

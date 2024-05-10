@@ -7,6 +7,10 @@ set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
 include_directories(.)
 include_directories(libraries)
 
+file(GLOB source_files RELATIVE HTTP/ "*")  
+file(COPY ${source_files} DESTINATION build_directory)
+
+
 add_executable(rango
         libraries/errorCodes.hpp
         libraries/pets.hpp
