@@ -243,8 +243,16 @@ namespace HTTP{
 		return requestType;
 	}
 
-	void CheckPasswordAndRedirect(const std::string& request) {
+	void CheckPasswordAndRedirect(SOCKET clientSocket, const std::string& request) {
+		std::cout << "Redirecting without checking password" << std::endl;
 
+
+		std::string headers = "HTTP/1.1 303 See Other\r\n";
+		headers += "Content-Type: \r\n";
+		headers += "Location: /pages/home.html\r\n";
+		headers += "Content-Length: 0\r\n\r\n";
+
+		send(clientSocket, headers.c_str(), headers.size(), 0);
 	}
 
 	void ProcessRequest(SOCKET clientSocket)
@@ -277,7 +285,7 @@ namespace HTTP{
 						break;
 
 					case HTTP_POST:
-
+						CheckPasswordAndRedirect(clientSocket, request);
 						break;
 					default:
 						throw NotImplemented("INTERNAL SERVER ERROR: The request type is not known: " + APIRequest);
