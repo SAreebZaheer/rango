@@ -22,7 +22,27 @@ int main()
     ExecutionStatus = RAISE::RunTests();
 
     // initialise
-    cout << "Welcome to CS112 PROJECT: RANGO";
-    cin;
+    cout << "Welcome to CS112 PROJECT: RANGO" << endl;
+    cout << "----------------------------------------" << endl;
+    SOCKET listeningSocket;
+    try{
+        listeningSocket = HTTP::InitialiseHTTPServer();
+        cout << "Server is now listening for active connections on port 80" << endl;
+        HTTP::HandleConnections(listeningSocket);
+    }
+    catch (const HTTP::ServiceUnavailableException& E)
+    {
+        cout << E.HTTPDetailedWhat();
+        WSACleanup(); // It is a good practice to cleanup the WinSock API if we are unable to initialise the server
+        return E.getCode();// If the server did not initialise, there is no point, so we should 
+    }
+    catch (...)
+    {
+		cout << "An unknown error occurred while trying to initialise the server";
+        WSACleanup(); // It is a good practice to cleanup the WinSock API if we are unable to initialise the server
+		return -1;
+	}
+
+
     return ExecutionStatus;
 }

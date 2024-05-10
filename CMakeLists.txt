@@ -12,7 +12,8 @@ add_executable(rango
         libraries/pets.hpp
         libraries/unitTests.hpp
         libraries/users.hpp
+        HTTP/server.hpp
         rango.cpp
         rango.hpp)
 
-target_link_libraries(rango -static)
+target_link_libraries(rango PRIVATE ws2_32)
