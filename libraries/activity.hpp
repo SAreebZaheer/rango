@@ -1,84 +1,77 @@
 #include <iostream>
 using namespace std;
 #include "pets.hpp"
-using namespace InteractablesAndObjects;
-
-class activity : public pet
-{
-    private:
-        string act;
-    public:
-
-    virtual void weight_lift()
-    {
-        level = level + 1;
-        health = health + 20;
-        cout << "The pet has done weightlifting and has gained 20 health points. Congratulations! " << endl;
+namespace InteractablesAndObjects{
+    string interact(pet& A, pet& B){
+        
     }
 
-    virtual void jog()
+    void pet::weight_lift()
     {
-        health = health + 5;
-        cout << "The pet has done weightlifting and has gained 5 health points. Congratulations! " << endl;
+        Stats.health += 20;
+        Stats.buffness++;
     }
 
-    virtual void run()
+    void pet::jog()
     {
-        level = level + 1;
-        health = health + 10;
-        cout << "The pet has done running and has gained 10 health points & increased 1 level. Congratulations! " << endl;
+        Stats.health += 5;
+        Stats.stamina++;
     }
 
-    virtual void dressup()
+    void pet::run()
     {
-        cout << "The pet has dressed up and has swag. Have fun! " << endl;
+        Stats.health += 10;
+        Stats.stamina += 2;
     }
 
-    virtual void feed()
+    void pet::dressup()
     {
-        level = level + 1;
-        health = health + 5;
-        cout << "The pet has eaten its food and has gained 5 health points along with 1 level. Congratulations! " << endl;
+        Stats.morale++;
     }
 
-    virtual void checkup()
+    void pet::feed()
     {
-        health = health + 10;
-        cout << "The pet has had its checkup and its health is : " << health << endl;
+        Stats.hunger = 0;
+        Stats.health += 5;
     }
 
-    activity()
+    void pet::checkup()
     {
-        int opt;
-            cout << "The following are some actvities you can take part in with your pet. Each activity increases various traits." << endl;
-            cout << "Please choose any one actvity." << endl;
-            cout << "1. Weight lifting" << endl << "2. Jog" << endl << "3. Run" << endl << "4. Dress Up" << endl;
-            cout << "5. Feed" << endl << "6. Checkup" << endl;
-            cin >> opt;
-            //all activities have effects on health, level, strength etc
-                if (opt == 1)
-                {
-                    this->weight_lift();
-                }
-                else if (opt == 2)
-                {
-                    this->jog();
-                }
-                else if (opt == 3)
-                {
-                    this->run();
-                }
-                else if (opt == 4)
-                {
-                    this->dressup();
-                }
-                else if (opt == 5)
-                {
-                   this->feed();
-                }
-                else if (opt == 6)
-                {
-                    this->checkup();
-                }
+        Stats.health += 10;
+    }
+
+    string pet::make_sound(){
+        return "Base pet cannot make a sound :(";
+    }
+    string pet::do_trick(){
+        return "Base pet cannot do tricks :(";
+    }
+
+    string bird::make_sound(){
+        return "Chirp!";
+    }
+    string bird::do_trick(){
+        return name + " flies through a hoop!";
+    }
+
+    string dog::make_sound(){
+        return "Bark!";
+    }
+    string dog::do_trick(){
+        return name + " does a backflip!";
+    }
+
+    string cat::make_sound(){
+        return "Meow!";
+    }
+    string cat::do_trick(){
+        return name + " fell asleep :(";
+    }
+
+    string fish::make_sound(){
+        return "Click!";
+    }
+    string fish::do_trick(){
+        return name + "does a spin!";
     }
 };
