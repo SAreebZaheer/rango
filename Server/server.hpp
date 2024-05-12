@@ -5,6 +5,8 @@
 #include <winsock2.h>	// Win Sock (Windows Socket) is the library that will help us do our HTTP request handling
 #include <exception>	// useful exception classes
 #include <windows.h>	// API for windows features
+#include <thread>		// we use multithreading for certain functionality like timing out send requests
+#include <chrono>		// used for timing functions
 
 #pragma once
 #pragma comment(lib, "ws2_32.lib")
@@ -218,16 +220,41 @@ namespace HTTP{
 		// Allocate buffer to hold file content (optional for large files)
 		char* buffer = new char[fileSize]; // Adjust buffer size as needed
 
-		// Read and send the file content in chunks
-		while (file.read(buffer, sizeof(char)*fileSize)) {
-			if (!buffer) {
-				break;
+		// Use a std::thread to send the file with a timeout
+		std::atomic<bool> timedOut(false);
+		auto sendThread = std::thread([&clientSocket, buffer, &file, &fileSize, &timedOut] {
+			auto start = std::chrono::steady_clock::now();
+			while (file.read(buffer, sizeof(char) * fileSize)) {
+				if (timedOut) {
+					break;
+				}
+				int bytesSent = send(clientSocket, buffer, file.gcount(), 0);
+				if (bytesSent == SOCKET_ERROR) {
+					break;
+				}
+				auto end = std::chrono::steady_clock::now();
+				std::chrono::duration<double, std::milli> elapsed = end - start;
+				// You can adjust the timeout value here in milliseconds
+				if (elapsed.count() > 1000) { // Timeout after 1 second
+					timedOut.store(true);
+					break;
+				}
 			}
-			send(clientSocket, buffer, file.gcount(), 0);
-		}
+			});
+
+		// Wait for the thread to finish or timeout
+		sendThread.join();
 
 		// Close the file
 		file.close();
+
+		// Free the buffer
+		delete[] buffer;
+
+		// Handle timeout scenario
+		if (timedOut.load()) {
+			throw GatewayTimeoutException("INTERNAL SERVER ERROR: TIMEOUT, file took too long to load, so it was interrupted");
+		}
 	}
 
 	RequestType parseRequestType(const std::string& request) {
@@ -243,9 +270,32 @@ namespace HTTP{
 		return requestType;
 	}
 
-	void CheckPasswordAndRedirect(SOCKET clientSocket, const std::string& request) {
+	void CheckPasswordAndRedirect(SOCKET clientSocket, std::string request) {
 		std::cout << "Redirecting without checking password" << std::endl;
+		int index = request.find("username=");
+		std::string username;
+		std::string password;
+		index += 9;
+		for (index; index < request.size(); index++) {
+			if (request[index] == '&') {
+				break;
+			}
+			username += request[index];
+		}
 
+		index = request.find("password=");
+		index += 9;
+		for (index; index < request.size(); index++) {
+			if (request[index] == '\n') {
+				break;
+			}
+			password += request[index];
+		}
+
+		// std::cout << "(DEBUG): Username: " << username << std::endl;
+		// std::cout << "(DEBUG): Password: " << password << std::endl;
+
+		fstream userfile;
 
 		std::string headers = "HTTP/1.1 303 See Other\r\n";
 		headers += "Content-Type: \r\n";
@@ -261,8 +311,11 @@ namespace HTTP{
 		int bytesReceived;
 		std::string URI;
 		RequestType requestType;
+
 		try {
 			std::cout << "----------------- Request received ----------------- " << std::endl;
+
+			
 			// Receive data from the client
 			while ((bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
 				// Print the entire request (for debugging and display of server's working)
@@ -301,11 +354,13 @@ namespace HTTP{
 					std::string headers = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n";
 					send(clientSocket, headers.c_str(), headers.size(), 0);
 				}
-				/*
-				Disable the catch all for testing so we can see the exact errors when they come
+				
+				// Disable the catch all for testing so we can see the exact errors when they come
 				catch (...) {
-					std::cout << "Unable to process request, ignored";
-				}*/
+					std::cout << "Unable to process request (Usually because too much data was prompted at once)";
+					std::string headers = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\n\r\n";
+					send(clientSocket, headers.c_str(), headers.size(), 0);
+				}
 
 				// Clear the buffer for next reception
 				memset(buffer, 0, sizeof(buffer));

@@ -7,8 +7,12 @@ set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
 include_directories(.)
 include_directories(libraries)
 
-file(GLOB source_files RELATIVE HTTP/ "*")  
-file(COPY ${source_files} DESTINATION build_directory)
+get_filename_component(SOURCE_DIR ABSOLUTE PATH ${PROJECT_SOURCE_DIR}/HTTP)
+get_filename_component(BINARY_DIR ABSOLUTE PATH ${PROJECT_BINARY_DIR}/HTTP)
+
+
+file(GLOB source_files RELATIVE HTTP/ "*")
+file(COPY ${source_files} DESTINATION ${BINARY_DIR}/HTTP)
 
 
 add_executable(rango
@@ -16,7 +20,7 @@ add_executable(rango
         libraries/pets.hpp
         libraries/unitTests.hpp
         libraries/users.hpp
-        HTTP/server.hpp
+        Server/server.hpp
         rango.cpp
         rango.hpp)
 
