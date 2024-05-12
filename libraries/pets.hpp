@@ -22,6 +22,8 @@ namespace InteractablesAndObjects{
                 std::cin >> name;
                 Stats.health = 50;
             };
+            
+            friend class user;
 
             virtual void weight_lift();
             virtual void jog();
@@ -77,4 +79,5 @@ namespace InteractablesAndObjects{
 
         fish(string name) : pet(name) {};
     };
+
 }
