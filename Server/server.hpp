@@ -5,6 +5,9 @@
 #include <winsock2.h>	// Win Sock (Windows Socket) is the library that will help us do our HTTP request handling
 #include <exception>	// useful exception classes
 #include <windows.h>	// API for windows features
+#include <thread>		// we use multithreading for certain functionality like timing out send requests
+#include <chrono>		// used for timing functions
+#include <algorithm>	// useful algos like trim
 
 #pragma once
 #pragma comment(lib, "ws2_32.lib")
@@ -12,6 +15,16 @@
 namespace HTTP{ 
 
 	// MARK: HTTP Classes/Structs
+
+	struct CurrentUser {
+		std::string Name;
+		std::string Pass;
+		std::string Email;
+		std::string Age;
+		std::string Address;
+		std::string Pets;
+	};
+	CurrentUser currUser;
 
 	enum RequestType {
 		HTTP_GET,
@@ -33,6 +46,13 @@ namespace HTTP{
 		"OPTIONS",
 		"TRACE",
 		"CONNECT"
+	};
+	std::string UserData[] = {
+		"/username",
+		"/email",
+		"/age",
+		"/address",
+		"/pets"
 	};
 
 	/**
@@ -88,14 +108,49 @@ namespace HTTP{
 				HTTPException(Message, 404) {};
 	};
 
+	class UnauthorisedError : public HTTPException
+	{
+		public:
+			UnauthorisedError(std::string Message) : 
+				HTTPException(Message, 401) {};
+	};
+
+	class InfiniteLoopException : public HTTPException
+	{
+		public:
+			InfiniteLoopException(std::string Message) : 
+				HTTPException(Message, 508) {};
+	};
+
 	// MARK: HTTP User Defined Functions
 
+	// Function to remove whitespace characters from a string
+	std::string trim_text(const std::string& str) {
+		std::cout << "(DEBUG): Trimming string" << str << std::endl;
+		std::string OUTPUT = "";
+		int i = 0;
+
+		for (i; i < str.size(); i++) {
+			if (isspace(str[i])) {
+				continue;
+			}
+			OUTPUT += str[i];
+		}
+
+		return OUTPUT;
+	}
 	/**
 	 * @brief This function initialises the HTTP Server
 	 * @return SOCKET: The listening socket for the server
 	*/
 	SOCKET InitialiseHTTPServer()
 	{
+		currUser.Name		= "NOBODY";
+		currUser.Pass		= "NA";
+		currUser.Email		= "NA";
+		currUser.Address	= "NA";
+		currUser.Age		= "NA";
+
 		// First, we need to initialise Win Sock
 		WSADATA wsaData;
 		if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
@@ -137,7 +192,33 @@ namespace HTTP{
 		std::string current_dir(buffer);
 		delete[] buffer;
 		return current_dir;
-	
+	}
+
+	std::string getUserData(int place) {
+		/*
+			std::string UserData[] = {
+				"/username",
+				"/email",
+				"/age",
+				"/address",
+				"/pets"
+			};
+		*/
+
+		switch (place) {
+			case 0:
+				return currUser.Name;
+			case 1:
+				return currUser.Email;
+			case 2:
+				return currUser.Age;
+			case 3:
+				return currUser.Address;
+			case 4:
+				return currUser.Pets;
+			default:
+				return "NA";
+		}
 	}
 
 	/**
@@ -146,6 +227,23 @@ namespace HTTP{
 	*	@param filename: The name of the file to send
 	*/
 	void SendFileWithHeaders(SOCKET clientSocket, const std::string& filename) {
+
+		// just send user data if thats whats requested
+		for (int i = 0; i < UserData->size(); i++) {
+			if (filename == UserData[i]) {
+				std::cout << "(Debug) Datatype Match!" << std::endl;
+				std::string headers = "HTTP/1.1 200 OK\r\n";
+				std::string content = getUserData(i);
+				headers += "Content-Type: \r\n";
+				headers += "Content-Length: " + std::to_string(content.size()) + "\r\n\r\n";
+				send(clientSocket, headers.c_str(), headers.size(), 0);
+				send(clientSocket, content.c_str(), content.size(), 0);
+				
+				return;
+			}
+		}
+
+
 		std::string current_dir = getCurrDir();
 		std::cout << "(Debug) Current Directory: " << current_dir << std::endl; 
 		std::string newFilename; // filename is a constant reference, so we need to create a new string to modify it
@@ -153,6 +251,7 @@ namespace HTTP{
 		int i = 0;
 
 		// Replace all forward slashes with backslashes
+		// This is for better compatibility with Windows file system
 		while (!newFilename[i] == '\0') {
 			if (newFilename[i] == '/') {
 				newFilename[i] = '\\';
@@ -218,16 +317,41 @@ namespace HTTP{
 		// Allocate buffer to hold file content (optional for large files)
 		char* buffer = new char[fileSize]; // Adjust buffer size as needed
 
-		// Read and send the file content in chunks
-		while (file.read(buffer, sizeof(char)*fileSize)) {
-			if (!buffer) {
-				break;
+		// Use a std::thread to send the file with a timeout
+		std::atomic<bool> timedOut(false);
+		auto sendThread = std::thread([&clientSocket, buffer, &file, &fileSize, &timedOut] {
+			auto start = std::chrono::steady_clock::now();
+			while (file.read(buffer, sizeof(char) * fileSize)) {
+				if (timedOut) {
+					break;
+				}
+				int bytesSent = send(clientSocket, buffer, file.gcount(), 0);
+				if (bytesSent == SOCKET_ERROR) {
+					break;
+				}
+				auto end = std::chrono::steady_clock::now();
+				std::chrono::duration<double, std::milli> elapsed = end - start;
+				// You can adjust the timeout value here in milliseconds
+				if (elapsed.count() > 1000) { // Timeout after 1 second
+					timedOut.store(true);
+					break;
+				}
 			}
-			send(clientSocket, buffer, file.gcount(), 0);
-		}
+			});
+
+		// Wait for the thread to finish or timeout
+		sendThread.join();
 
 		// Close the file
 		file.close();
+
+		// Free the buffer
+		delete[] buffer;
+
+		// Handle timeout scenario
+		if (timedOut.load()) {
+			throw GatewayTimeoutException("INTERNAL SERVER ERROR: TIMEOUT, file took too long to load, so it was interrupted");
+		}
 	}
 
 	RequestType parseRequestType(const std::string& request) {
@@ -243,9 +367,97 @@ namespace HTTP{
 		return requestType;
 	}
 
-	void CheckPasswordAndRedirect(SOCKET clientSocket, const std::string& request) {
-		std::cout << "Redirecting without checking password" << std::endl;
+	void CheckPasswordAndRedirect(SOCKET clientSocket, std::string request) {
+		int index = request.find("username=");
+		std::string username;
+		std::string password;
+		index += 9;
+		for (index; index < request.size(); index++) {
+			if (request[index] == '&') {
+				break;
+			}
+			username += request[index];
+		}
 
+		index = request.find("password=");
+		index += 9;
+		for (index; index < request.size(); index++) {
+			if (request[index] == '\n') {
+				break;
+			}
+			password += request[index];
+		}
+
+		std::cout << "(DEBUG): Username: " << username << std::endl;
+		std::cout << "(DEBUG): Password: " << password << std::endl;
+
+		std::ifstream userdata;
+
+		userdata.open("HTTP\\PROTECTED\\" + username + "\\UserData.XML", std::ios::in);
+
+		if(userdata.fail()) {
+			std::string headers = "HTTP/1.1 303 See Other\r\n";
+			headers += "Content-Type: \r\n";
+			headers += "Location: /pages/access_denied.html\r\n";
+			headers += "Content-Length: 0\r\n\r\n";
+
+			send(clientSocket, headers.c_str(), headers.size(), 0);
+			throw UnauthorisedError("User doesn't exist");
+		}
+		std::string completeData;
+
+		std::string temp;
+		while(std::getline(userdata, temp)) {
+			completeData += temp;
+		}
+
+		std::string correctPassword;
+		int index_start, index_end;
+
+		index_start = completeData.find("<password>") + 10; // not the most elegant solution, i know xD
+		index_end	= completeData.find("</password>"); 
+
+		correctPassword = completeData.substr(index_start, index_end - index_start);
+		correctPassword = trim_text(correctPassword);
+		std::cout << "(DEBUG): Correct Password: \"" << correctPassword << "\"" << std::endl; // we add quotations so we can see any spaces at the edges
+
+
+		if(password != correctPassword) {
+			std::string headers = "HTTP/1.1 303 See Other\r\n";
+			headers += "Content-Type: \r\n";
+			headers += "Location: /pages/access_denied.html\r\n";
+			headers += "Content-Length: 0\r\n\r\n";
+
+			send(clientSocket, headers.c_str(), headers.size(), 0);
+			throw UnauthorisedError("Password is incorrect");
+		}
+
+		index_start = completeData.find("<email>") + 7; 
+		index_end = completeData.find("</email>");
+		std::string email = completeData.substr(index_start, index_end - index_start);
+		email = trim_text(email);
+
+		index_start = completeData.find("<address>") + 9; 
+		index_end = completeData.find("</address>");
+		std::string address = completeData.substr(index_start, index_end - index_start);
+		address = trim_text(address);
+
+		index_start = completeData.find("<age>") + 5; 
+		index_end	= completeData.find("</age>");
+		std::string age = completeData.substr(index_start, index_end - index_start);
+		age = trim_text(age);
+
+		index_start = completeData.find("<pets>") + 6; 
+		index_end = completeData.find("</pets>");
+		std::string pets = completeData.substr(index_start, index_end - index_start);
+		pets = trim_text(pets);
+
+		currUser.Name		= username;
+		currUser.Pass		= password;
+		currUser.Email		= email;
+		currUser.Address	= address;
+		currUser.Age		= age;
+		currUser.Pets		= pets;
 
 		std::string headers = "HTTP/1.1 303 See Other\r\n";
 		headers += "Content-Type: \r\n";
@@ -253,6 +465,7 @@ namespace HTTP{
 		headers += "Content-Length: 0\r\n\r\n";
 
 		send(clientSocket, headers.c_str(), headers.size(), 0);
+
 	}
 
 	void ProcessRequest(SOCKET clientSocket)
@@ -261,8 +474,11 @@ namespace HTTP{
 		int bytesReceived;
 		std::string URI;
 		RequestType requestType;
+
 		try {
 			std::cout << "----------------- Request received ----------------- " << std::endl;
+
+			
 			// Receive data from the client
 			while ((bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
 				// Print the entire request (for debugging and display of server's working)
@@ -301,11 +517,21 @@ namespace HTTP{
 					std::string headers = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n";
 					send(clientSocket, headers.c_str(), headers.size(), 0);
 				}
-				/*
-				Disable the catch all for testing so we can see the exact errors when they come
+
+				catch (const UnauthorisedError& E) {
+					std::cout << E.HTTPDetailedWhat() << std::endl;
+				}
+
+				catch (const InfiniteLoopException& E) {
+					std::cout << E.HTTPDetailedWhat() << std::endl;
+				}
+				
+				// Disable the catch all for testing so we can see the exact errors when they come
 				catch (...) {
-					std::cout << "Unable to process request, ignored";
-				}*/
+					std::cout << "Unable to process request (Usually because too much data was prompted at once)";
+					std::string headers = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\n\r\n";
+					send(clientSocket, headers.c_str(), headers.size(), 0);
+				}
 
 				// Clear the buffer for next reception
 				memset(buffer, 0, sizeof(buffer));
@@ -320,7 +546,6 @@ namespace HTTP{
 			return;
 		}
 	}
-
 
 	void HandleConnections(SOCKET listeningSocket)
 	{

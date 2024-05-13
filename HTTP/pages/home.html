@@ -2,77 +2,33 @@
 <html>
 <head>
     <title>Home Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .profile {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-        }
-        .profile img {
-            border-radius: 50%;
-            height: 50px;
-            width: 50px;
-            object-fit: fit;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding-top: 80px;
-            align-self: center;
-        }
-        .welcome {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .pet-section {
-            display: flex;
-            justify-content: center;
-
-        }
-        .pet-card {
-            width: 150px; /* Adjusted width */
-            margin: 20px;
-            text-align: center;
-            padding-right: 100px;
-        }
-        .pet-card img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="/styles/standard.css">
 </head>
 <body>
     <div class="profile">
-        <a href="http://localhost:80/profile.html"><img src="http://localhost:80/download.jpeg" alt="Profile Picture"></a>
+        <a href="/pages/profile.html"><img src="/images/download.jpeg" alt="Profile Picture"></a>
     </div>
     <div class="welcome">
         <h1>Welcome, [Username]!</h1>
         <p>Here are your current pets:</p>
-    </div>
-    <div class="container" pad>
+    </div> <br />
+    <div class="pet-container" pad>
         <div class="pet-section">
             <div class="pet-card">
                 <h2>Bird Name</h2>
-                <a href="bird_info.html"><img src="bird.png" alt="Bird"></a>
+                <a href="/pages/bird_info.html"><img src="/images/bird.jpg" alt="Bird"></a>
             </div>
             <div class="pet-card">
                 <h2>Dog Name</h2>
-                <a href="dog_info.html"><img src="dog.png" alt="Dog"></a>
+                <a href="/pages/dog_info.html"><img src="/images/dog.jpg" alt="Dog"></a>
             </div>
             <div class="pet-card">
                 <h2>Cat Name</h2>
-                <a href="cat_info.html"><img src="tom.png" alt="Cat"></a>
+                <a href="/pages/cat_info.html"><img src="/images/tom.jpg" alt="Cat"></a>
             </div>
             <div class="pet-card">
                 <h2>Fish Name</h2>
-                <a href="fish_info.html"><img src="nemo.png" alt="Fish"></a>
+                <a href="/pages/fish_info.html"><img src="/images/nemo.jpg" alt="Fish"></a>
             </div>
         </div>
     </div>

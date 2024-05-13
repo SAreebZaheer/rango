@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream> // need this for cin, cout
-#include "HTTP/server.hpp" // our HTTP server lives here
+#include "Server/server.hpp" // our HTTP server lives here
 #include "libraries/pets.hpp" // our pets classes and helpers live here
 #include "libraries/users.hpp" // our users classes and helpers live here
 #include "libraries/unitTests.hpp" // unit testing lives here

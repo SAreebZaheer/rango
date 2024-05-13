@@ -1,0 +1,50 @@
+<userdata>
+	<user>
+		<username> 			Azeem 					</username>
+		<password> 			ILikeCats 				</password>
+		<email>				u2023150@giki.edu.pk 	</email>
+		<age>				20						</age>
+		<address>			Hostel 10, Room 110		</address>
+	</user>
+
+	<pets>
+		<pet type="cat">
+			<name> 			Muffin 					</name>
+			<stats>
+				<health> 	100						</health>
+				<buffness>	10						</buffness>
+				<stamina>	20						</stamina>
+				<morale>	100						</morale>
+				<hunger>	0						</hunger>
+			</stats>
+			<progress>
+				<streak>	10						</streak>
+				<level>		100						</level>
+				<achievements>
+					<achieve>	Mad Skillz!				</achieve>
+					<achieve>	Killed it!				</achieve>
+					<achieve>	Riyal!					</achieve>
+				</achievements>
+			</progress>
+		</pet>
+		<pet type="fish">
+			<name> 			Nemo 					</name>
+			<stats>
+				<health> 	100						</health>
+				<buffness>	10						</buffness>
+				<stamina>	20						</stamina>
+				<morale>	100						</morale>
+				<hunger>	0						</hunger>
+			</stats>
+			<progress>
+				<streak>	10						</streak>
+				<level>		100						</level>
+				<achievements>
+					<achieve>	Water Logged!			</achieve>
+					<achieve>	Riyal!					</achieve>
+					<achieve>	Aerial Tricks!			</achieve>
+				</achievements>
+			</progress>
+		</pet>
+	</pets>
+</userdata>
