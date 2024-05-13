@@ -3,11 +3,7 @@ using namespace std;
 #include "pets.hpp"
 namespace InteractablesAndObjects{
 
-    void pet::weight_lift()
-    {
-        Stats.health += 20;
-        Stats.buffness++;
-    }
+  
 
     void pet::jog()
     {

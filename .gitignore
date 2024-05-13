@@ -32,9 +32,12 @@
 *.app
 
 # VSCode and Cmake Files
-/.vscode
 /cmake-build-debug
 
 # Visual Studio Files
 .vs/
 out/
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore
