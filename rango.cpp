@@ -20,8 +20,6 @@ int main()
     int ExecutionStatus = NO_ERRORS;
     ExecutionStatus = RAISE::RunTests();
 
-
-
     // initialise
     cout << "Welcome to CS112 PROJECT: RANGO" << endl;
     cout << "----------------------------------------" << endl;

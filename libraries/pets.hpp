@@ -32,6 +32,8 @@ namespace InteractablesAndObjects{
 
             virtual string make_sound();
             virtual string do_trick();
+
+            friend class user;
     }; 
 
     class bird : public pet {

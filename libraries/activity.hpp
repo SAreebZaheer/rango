@@ -2,9 +2,6 @@
 using namespace std;
 #include "pets.hpp"
 namespace InteractablesAndObjects{
-    string interact(pet& A, pet& B){
-        
-    }
 
     void pet::weight_lift()
     {
@@ -73,5 +70,10 @@ namespace InteractablesAndObjects{
     }
     string fish::do_trick(){
         return name + "does a spin!";
+    }
+
+
+    string interact(pet& A, pet& B) {
+        std::cout << "Generic types do not interact :(" << std::endl;
     }
 };
